@@ -8,26 +8,32 @@
 </body>
 <script>    
 const URL = 'http://localhost:3000/github?';
+
 let activatePage = 1;
-let activateKeyword;
+let activateKeyword = document.getElementById('keywordTextBox').value;
+
 init = async => {
+
     const searchButton = document.getElementById('search');
     searchButton.onclick = () => {
         activatePage = 1;
         activateKeyword = document.getElementById('keywordTextBox').value;
         fetchAndDisplay(activatePage, activateKeyword);
     };
+
     const backButton = document.getElementById('back');
     backButton.onclick = () => {
         activatePage--;
         activatePage < 1 ? activatePage = 1 : null;
         fetchAndDisplay(activatePage);
     };
+
     const nextButton = document.getElementById('next');
     nextButton.onclick = () => {
         activatePage++;
         fetchAndDisplay(activatePage);
     };
+
     fetchAndDisplay(activatePage);
 }
 
