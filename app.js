@@ -1,4 +1,6 @@
 const Hapi = require('@hapi/hapi');
+const Inert = require('@hapi/inert');
+const Path = require('path');
 const RestructApi = require("./api/restructure");
 const api = new RestructApi();
 const GitH = require("./api/github-fetch");
@@ -8,23 +10,28 @@ const init = async () => {
 
     const server = Hapi.server({
         port: 3000,
-        host: 'localhost'
+        host: 'localhost',
+        routes: {
+            files: {
+                relativeTo: Path.join(__dirname, 'public')
+            }
+        }
     });
 
+    await server.register(Inert);
+    
     server.route({
         method: 'GET',
         path: '/',
-        handler: (request, h) => {
-
-            return 'Hello World!';
+        handler:  (request, h) => {
+            return h.file('git.html');
         }
     });
     server.route({
         method: 'POST',
         path: '/',
         handler: (request, h) => {
-            const testinput = '{"0":[{"id":10,"title":"House","level":0,"children":[],"parent_id":null}],"1":[{"id":12,"title":"Red Roof","level":1,"children":[],"parent_id":10},{"id":18,"title":"Blue Roof","level":1,"children":[],"parent_id":10},{"id":13,"title":"Wall","level":1,"children":[],"parent_id":10}],"2":[{"id":17,"title":"Blue Window","level":2,"children":[],"parent_id":12},{"id":16,"title":"Door","level":2,"children":[],"parent_id":13},{"id":15,"title":"Red Window","level":2,"children":[],"parent_id":12}]}';
-            const result = api.transform(testinput);
+            const result = api.transform(request.payload);
             return JSON.stringify(result);
         }
     });
@@ -34,8 +41,7 @@ const init = async () => {
         handler: async (request, h) => {
                 const result = await ghApi.fetch(request.query.q, request.query.p, 10);
                 return JSON.stringify(result);
-        },
-        options : { cors : { origin : ['*']}}
+        }
     });
 
     await server.start();

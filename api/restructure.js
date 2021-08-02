@@ -1,7 +1,7 @@
 class RestructApi {
     transform( input ) {
         try {
-            const data = JSON.parse( input );
+            const data = typeof input === 'object' ? input : JSON.parse( input );
             const flatedItems = this.#flatenItems( data );
             const topLevelItems = flatedItems.filter( el => el.parent_id === null );
             return this.#fillChildren( topLevelItems, flatedItems );
