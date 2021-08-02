@@ -1,0 +1,58 @@
+<html>
+<body>
+<input type='text' id='keywordTextBox' value='nodejs'></input> <button id='search'>Search</button>
+<div></div>
+<button id='back'>Back</button>
+<button id='next'>Next</button>
+<div id='resultArea'></div>
+</body>
+<script>    
+const URL = 'http://localhost:3000/github?';
+let activatePage = 1;
+let activateKeyword;
+init = async => {
+    const searchButton = document.getElementById('search');
+    searchButton.onclick = () => {
+        activatePage = 1;
+        activateKeyword = document.getElementById('keywordTextBox').value;
+        fetchAndDisplay(activatePage, activateKeyword);
+    };
+    const backButton = document.getElementById('back');
+    backButton.onclick = () => {
+        activatePage--;
+        activatePage < 1 ? activatePage = 1 : null;
+        fetchAndDisplay(activatePage);
+    };
+    const nextButton = document.getElementById('next');
+    nextButton.onclick = () => {
+        activatePage++;
+        fetchAndDisplay(activatePage);
+    };
+    fetchAndDisplay(activatePage);
+}
+
+fetchAndDisplay = async (page, keyword) => {
+    keyword === undefined ? keyword = activateKeyword : null ;
+    const result = await fetch(`${URL}&q=${keyword}&p=${page}`);
+    const data = await result.json();
+    
+    const resultDiv = document.getElementById('resultArea');
+    while (resultDiv.firstChild) {
+        resultDiv.removeChild(resultDiv.firstChild);
+    }
+    
+    data.items.forEach( el => {
+        const div = document.createElement('div');
+        const h2 = document.createElement('h2');
+        const link = document.createElement('a');
+        h2.innerText = el.name;
+        link.innerText = el.html_url;
+        div.appendChild(h2);
+        div.appendChild(link);
+        resultDiv.appendChild(div);
+    });
+}
+
+init();
+</script>
+</html>
