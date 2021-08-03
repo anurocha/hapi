@@ -1,3 +1,5 @@
+console.log('--- Test restructure ---');
+
 const RestructApi = require("../api/restructure");
 const api = new RestructApi();
 
